@@ -1,6 +1,6 @@
 {
-  "name": "com.ishimine.runtimescriptablesingleton",
-  "displayName": "Felipe Ishimine - RuntimeScriptableSingleton",
+  "name": "com.gameever.runtimescriptablesingleton",
+  "displayName": "Game Ever - RuntimeScriptableSingleton",
   "description": "Core package for creating RuntimeScriptableSingleton mainly for managers or systems controllers",
   "version": "1.0.7",
   "Unity": "2019.1",
