@@ -13,7 +13,9 @@ public abstract class BaseRuntimeScriptableSingleton : ScriptableObject
     public abstract void InitializeSingleton();
     
     public static string DefaultFileFolder => "Assets/ScriptableObjects/Managers";
-
-    public virtual void PreBuildProcess(){}
+    /// <summary>
+    /// Use throw new BuildFailedException(Message)
+    /// </summary>
+    public virtual (bool success, string errorMessage) PreBuildProcess() => (true, string.Empty);
 
 }

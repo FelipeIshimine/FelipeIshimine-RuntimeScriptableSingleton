@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 
@@ -11,11 +12,17 @@ public class RuntimeScriptableSingletonBuildValidator  : IPreprocessBuildWithRep
         {
             RuntimeScriptableSingletonInitializer.Clear();
             RuntimeScriptableSingletonInitializer.Initialize();
-            RuntimeScriptableSingletonInitializer.PreBuildProcess();
         }
         catch (System.Exception e) //Relanzamos el error
         {
             throw new UnityEditor.Build.BuildFailedException(e);
+        }
+
+        string errorMessage = RuntimeScriptableSingletonInitializer.PreBuildProcess();
+        if (errorMessage.Length > 0)
+        {
+            Debug.LogError("Error");
+            throw new UnityEditor.Build.BuildFailedException(new System.Exception(errorMessage));
         }
     }
     

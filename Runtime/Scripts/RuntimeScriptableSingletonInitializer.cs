@@ -4,8 +4,9 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
-#if UNITY_EDITOR
 using System.Text;
+
+#if UNITY_EDITOR
 using UnityEditor;
 #endif
 
@@ -167,9 +168,17 @@ public class RuntimeScriptableSingletonInitializer : ScriptableObject
 
     private static int RuntimeScriptableSingletonSorter(BaseRuntimeScriptableSingleton x, BaseRuntimeScriptableSingleton y) => x.InitializationPriority.CompareTo(y.InitializationPriority);
 
-    public static void PreBuildProcess()
+    public static string PreBuildProcess()
     {
+        StringBuilder errors = new StringBuilder();
+
         foreach (BaseRuntimeScriptableSingleton baseRuntimeScriptableSingleton in Instance.elements)
-            baseRuntimeScriptableSingleton.PreBuildProcess();
+        {
+            (bool success, string message) = baseRuntimeScriptableSingleton.PreBuildProcess();
+
+            if (!success)
+                errors.Append($"{message} \n");
+        }
+        return errors.ToString();
     }
 }
