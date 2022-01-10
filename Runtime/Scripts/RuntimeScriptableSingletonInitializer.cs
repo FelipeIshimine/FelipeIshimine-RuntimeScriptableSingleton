@@ -13,7 +13,8 @@ public class RuntimeScriptableSingletonInitializer : ScriptableObject
 {
     public string addressableGroupName = "RuntimeScriptableSingleton";
     public string addressableLabel = "RuntimeScriptableSingleton";
-    
+
+    private static Action OnInitialization;
     public static RuntimeScriptableSingletonInitializer Instance { get; private set; }
     
     public List<BaseRuntimeScriptableSingleton> elements = new List<BaseRuntimeScriptableSingleton>();
@@ -86,7 +87,7 @@ public class RuntimeScriptableSingletonInitializer : ScriptableObject
         runtimeScriptableSingletonInitializer.InitializeElements();
 
         InitializationCompleted = true;
-
+        OnInitialization?.Invoke();
     }
 
 
@@ -117,5 +118,13 @@ public class RuntimeScriptableSingletonInitializer : ScriptableObject
 
     private static int RuntimeScriptableSingletonSorter(BaseRuntimeScriptableSingleton x, BaseRuntimeScriptableSingleton y) => x.InitializationPriority.CompareTo(y.InitializationPriority);
 
+
+    public static void WhenInitializationIsDone(Action callback)
+    {
+        if(InitializationCompleted)
+            callback?.Invoke();
+        else
+            OnInitialization += callback;
+    }
    
 }

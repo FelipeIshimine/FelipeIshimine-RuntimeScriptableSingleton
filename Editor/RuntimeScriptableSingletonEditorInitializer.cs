@@ -7,6 +7,7 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using Object = UnityEngine.Object;
 
 public static class RuntimeScriptableSingletonEditorInitializer
@@ -17,6 +18,7 @@ public static class RuntimeScriptableSingletonEditorInitializer
     {
         GetOrInstantiateAllInstances();
         ScanForAll();
+        
         
         StringBuilder errors = new StringBuilder();
         foreach (BaseRuntimeScriptableSingleton baseRuntimeScriptableSingleton in FindAssetsByType<BaseRuntimeScriptableSingleton>())
@@ -59,6 +61,8 @@ public static class RuntimeScriptableSingletonEditorInitializer
                     throw new ArgumentOutOfRangeException();
             }
         }
+        EditorUtility.SetDirty(runtimeScriptableSingletonInitializer);
+        AssetDatabase.SaveAssets();
     }
     
     private static void GetOrInstantiateAllInstances()
