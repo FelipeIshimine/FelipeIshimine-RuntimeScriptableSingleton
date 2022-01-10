@@ -8,9 +8,7 @@ public static class RuntimeScriptableSingletonEditor
     [MenuItem("RuntimeScriptableSingleton/Instantiate Missing", priority = 1)]
     public static void GetOrInstantiateAllInstances()
     {
-        RuntimeScriptableSingletonInitializer.GetOrInstantiateAllInstances();
-        
-        
+        RuntimeScriptableSingletonEditorInitializer.PreBuildProcess();
     }
 
 }

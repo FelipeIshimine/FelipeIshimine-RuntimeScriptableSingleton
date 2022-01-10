@@ -7,8 +7,19 @@ public abstract class BaseRuntimeScriptableSingleton : ScriptableObject
     /// </summary>
     public virtual int InitializationPriority => 0;
 
-    [SerializeField] private bool includeInBuild = true;
-    public bool IncludeInBuild => includeInBuild;
+    public enum AssetMode
+    {
+        EditorOnly,
+        Addressable,
+        Resources
+    }
+
+    public AssetMode loadMode = AssetMode.Resources;
+
+    public bool IsEditorOnly => loadMode == AssetMode.EditorOnly;
+    public bool IncludeAsResource => loadMode == AssetMode.Resources;
+    public bool IncludeAsAddressable => loadMode != AssetMode.Addressable;
+
     
     public abstract void InitializeSingleton();
     

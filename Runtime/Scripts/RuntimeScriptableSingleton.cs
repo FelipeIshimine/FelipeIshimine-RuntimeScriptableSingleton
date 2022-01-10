@@ -45,8 +45,8 @@ public abstract class RuntimeScriptableSingleton<T> : BaseRuntimeScriptableSingl
 
     public override void InitializeSingleton()
     {
-        if(!IncludeInBuild)
-            throw new Exception($"Initializing EDITOR ONLY RuntimScriptableSingleton {this.GetType()}");
+        if(IsEditorOnly)
+            throw new Exception($"Initializing EDITOR ONLY RuntimeScriptableSingleton {this.GetType()}");
         
         if (_instance != null && _instance != this)
             throw new Exception($"Singleton error {this.GetType()}");
@@ -54,6 +54,7 @@ public abstract class RuntimeScriptableSingleton<T> : BaseRuntimeScriptableSingl
         _instance = this as T;
         Debug.Log($" <Color=white> |{InitializationPriority}|</color> <Color=green> {_instance}  </color> ");
     }
+
 
 #if UNITY_EDITOR
     public static T FindOrCreate()
@@ -70,3 +71,6 @@ public abstract class RuntimeScriptableSingleton<T> : BaseRuntimeScriptableSingl
     }
 #endif
 }
+
+
+
