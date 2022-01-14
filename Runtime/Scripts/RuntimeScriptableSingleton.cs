@@ -1,4 +1,5 @@
 ﻿using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using Object = System.Object;
 #if UNITY_EDITOR
@@ -32,8 +33,8 @@ public abstract class RuntimeScriptableSingleton<T> : BaseRuntimeScriptableSingl
         }
     }
 
-    public static string DefaultFileName =>  typeof(T).Name;
-    public static string DefaultFilePath => $"{DefaultFileFolder}/{DefaultFileName}.asset";
+    private static string DefaultFileName =>  typeof(T).Name;
+    private static string DefaultFilePath => $"{DefaultFileFolder}/{DefaultFileName}.asset";
 
     public T Myself => this as T;
 

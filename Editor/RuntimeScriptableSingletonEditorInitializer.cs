@@ -47,7 +47,6 @@ public static class RuntimeScriptableSingletonEditorInitializer
                 case BaseRuntimeScriptableSingleton.AssetMode.EditorOnly:
                     break;
                 case BaseRuntimeScriptableSingleton.AssetMode.Addressable:
-                    Debug.Log(baseRuntimeScriptableSingleton==null);
                     AddToAddressableAssets(
                         baseRuntimeScriptableSingleton, 
                         runtimeScriptableSingletonInitializer.addressableGroupName, 
@@ -76,6 +75,9 @@ public static class RuntimeScriptableSingletonEditorInitializer
             
             
             var objects = FindAssetsByType(currentType);
+            
+            
+            
             
             if (objects.Count == 1)
                 uObject = objects[0];
@@ -119,8 +121,11 @@ public static class RuntimeScriptableSingletonEditorInitializer
             Object[] found = AssetDatabase.LoadAllAssetsAtPath(assetPath);
 
             for (int index = 0; index < found.Length; index++)
-                if (found[index] is { } item && !assets.Contains(item))
+            {
+                if (found[index].GetType() == type && found[index] is { } item && !assets.Contains(item))
                     assets.Add(item);
+                
+            }
         }
         return assets;
     }

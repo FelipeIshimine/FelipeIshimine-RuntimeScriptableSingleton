@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using Sirenix.OdinInspector;
+using UnityEngine;
 
 public abstract class BaseRuntimeScriptableSingleton : ScriptableObject
 {
@@ -14,8 +16,8 @@ public abstract class BaseRuntimeScriptableSingleton : ScriptableObject
         Resources
     }
 
-    public AssetMode loadMode = AssetMode.Resources;
-
+    [FoldoutGroup("Configuration")]public AssetMode loadMode = AssetMode.Resources;
+    
     public bool IsEditorOnly => loadMode == AssetMode.EditorOnly;
     public bool IncludeAsResource => loadMode == AssetMode.Resources;
     public bool IncludeAsAddressable => loadMode != AssetMode.Addressable;
@@ -23,6 +25,9 @@ public abstract class BaseRuntimeScriptableSingleton : ScriptableObject
     public abstract void InitializeSingleton();
     
     public static string DefaultFileFolder => "Assets/ScriptableObjects/Managers";
+    
+    
+    
     /// <summary>
     /// Use throw new BuildFailedException(Message)
     /// </summary>
