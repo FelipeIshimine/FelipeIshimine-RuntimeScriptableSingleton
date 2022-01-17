@@ -13,10 +13,11 @@ public abstract class BaseRuntimeScriptableSingleton : ScriptableObject
     {
         EditorOnly,
         Addressable,
-        Resources
+        Resources,
+        AddressableManual
     }
 
-    [FoldoutGroup("Configuration")]public AssetMode loadMode = AssetMode.Resources;
+    public AssetMode loadMode = AssetMode.Resources;
     
     public bool IsEditorOnly => loadMode == AssetMode.EditorOnly;
     public bool IncludeAsResource => loadMode == AssetMode.Resources;
