@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEditor;
-using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
-using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
 using Object = UnityEngine.Object;
@@ -47,7 +44,7 @@ public static class RuntimeScriptableSingletonEditorInitializer
                 case BaseRuntimeScriptableSingleton.AssetMode.EditorOnly:
                     break;
                 case BaseRuntimeScriptableSingleton.AssetMode.Addressable:
-                    AddToAddressableAssets(
+                    AddressablesUtility.AddToAddressableAssets(
                         baseRuntimeScriptableSingleton, 
                         runtimeScriptableSingletonInitializer.addressableGroupName, 
                         runtimeScriptableSingletonInitializer.addressableLabel);
@@ -143,37 +140,5 @@ public static class RuntimeScriptableSingletonEditorInitializer
                     assets.Add(item);
         }
         return assets;
-    }
-    
-    public static void AddToAddressableAssets(UnityEngine.Object asset, string groupName, params string[] labels)
-    {
-        var settings = AddressableAssetSettingsDefaultObject.Settings;
-
-        var currentLabels = new List<string>(settings.GetLabels());
-        foreach (string label in labels)
-        {
-            if(!currentLabels.Contains(label))
-                AddressableAssetSettingsDefaultObject.Settings.AddLabel(label);
-        }
-        
-        if (settings)
-        {
-            var group = settings.FindGroup(groupName);
-            if (!group)
-                group = settings.CreateGroup(groupName, false, false, true, null, typeof(ContentUpdateGroupSchema), typeof(BundledAssetGroupSchema));
- 
-            var assetPath = AssetDatabase.GetAssetPath(asset);
-            var guid = AssetDatabase.AssetPathToGUID(assetPath);
- 
-            var addressableAssetEntry = settings.CreateOrMoveEntry(guid, group, false, false);
-
-            foreach (string label in labels)
-                addressableAssetEntry.labels.Add(label);
-            
-            var entriesAdded = new List<AddressableAssetEntry> {addressableAssetEntry};
- 
-            group.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, false, true);
-            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, true, false);
-        }
     }
 }
