@@ -35,14 +35,11 @@ public static class RuntimeScriptableSingletonEditor
     
     private static void ScanForAll(List<BaseRuntimeScriptableSingleton> elements)
     {
-        elements.RemoveAll(x => x == null || !x.IncludeInBuild);
+        elements.RemoveAll(x => x == null);
         foreach (BaseRuntimeScriptableSingleton baseRuntimeScriptableSingleton in FindAssetsByType<BaseRuntimeScriptableSingleton>())
         {
-            if (baseRuntimeScriptableSingleton.IncludeInBuild)
-            {
-                if(!elements.Contains(baseRuntimeScriptableSingleton))
-                    elements.Add(baseRuntimeScriptableSingleton);
-            }
+            if(!elements.Contains(baseRuntimeScriptableSingleton))
+                elements.Add(baseRuntimeScriptableSingleton);
         }
     }
     

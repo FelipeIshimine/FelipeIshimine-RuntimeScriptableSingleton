@@ -2,11 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
-using UnityEngine.AddressableAssets;
-
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 public class RuntimeScriptableSingletonInitializer : ScriptableObject
 {
@@ -28,25 +23,20 @@ public class RuntimeScriptableSingletonInitializer : ScriptableObject
     public static void Clear() => Instance = null;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    public static async void Initialize()
+    public static void Initialize()
     {
         InitializationStarted = true;
-
-        #region Resources Load
-
-        RuntimeScriptableSingletonInitializer runtimeScriptableSingletonInitializer = Resources.Load<RuntimeScriptableSingletonInitializer>(nameof(RuntimeScriptableSingletonInitializer));
-
+        RuntimeScriptableSingletonInitializer runtimeScriptableSingletonInitializer =
+            Resources.Load<RuntimeScriptableSingletonInitializer>(nameof(RuntimeScriptableSingletonInitializer));
 
         if (runtimeScriptableSingletonInitializer == null)
-        {
             throw new Exception($"{nameof(RuntimeScriptableSingletonInitializer)} not found in any Resources");
-        }
-    }
+
         OnInitialization?.Invoke();
         InitializationCompleted = true;
 
-
         runtimeScriptableSingletonInitializer.InitializeElements();
+    }
 
     public void InitializeElements()
     {
@@ -60,9 +50,6 @@ public class RuntimeScriptableSingletonInitializer : ScriptableObject
             Debug.Log("RelEaSe VeRsiOn: DeBuG DiSaBlEd");
         
         Debug.Log("<COLOR=white>---RuntimeScriptableSingleton Initializer---</color>");
-        #if UNITY_EDITOR
-        Debug.Log(AssetDatabase.GetAssetPath(this));
-        #endif
 
         List<BaseRuntimeScriptableSingleton> sortedManagers = new List<BaseRuntimeScriptableSingleton>(elements);
         
