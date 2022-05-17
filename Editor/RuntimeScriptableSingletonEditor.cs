@@ -54,8 +54,8 @@ public static class RuntimeScriptableSingletonEditor
                 continue;
             
             Object uObject = null;
-            
             var objects = FindAssetsByType(item);
+            objects.RemoveAll(x => x.GetType() != item);
             
             if (objects.Count == 1)
                 uObject = objects[0];
@@ -63,7 +63,7 @@ public static class RuntimeScriptableSingletonEditor
             {
                 StringBuilder stringBuilder = new StringBuilder($"More than 1 instances of {item.Name} found");
                 foreach (Object obj in objects)
-                    stringBuilder.Append($"\n {AssetDatabase.GetAssetPath(obj)}");
+                    stringBuilder.Append($"\n {AssetDatabase.GetAssetPath(obj)} T:{obj.GetType()}");
                 throw new Exception(stringBuilder.ToString());
             }
             
