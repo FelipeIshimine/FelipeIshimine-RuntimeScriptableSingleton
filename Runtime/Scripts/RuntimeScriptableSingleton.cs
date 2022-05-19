@@ -18,18 +18,15 @@ public abstract class RuntimeScriptableSingleton<T> : BaseRuntimeScriptableSingl
     {
         get
         {
-            if (!_instance)
+            if (_instance) return _instance;
+#if UNITY_EDITOR
+            if(!Application.isPlaying)
             {
-                #if UNITY_EDITOR
-                if(!Application.isPlaying)
-                {
-                    _instance = FindOrCreate();
-                    return _instance;
-                }
-                #endif
-                throw new Exception($"{DefaultFileName} not initialized.");
+                _instance = FindOrCreate();
+                return _instance;
             }
-            return _instance;
+#endif
+            throw new Exception($"{DefaultFileName} not initialized.");
         }
     }
 

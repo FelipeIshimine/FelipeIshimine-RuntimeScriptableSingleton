@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
+using UnityEngine.AddressableAssets;
 
 public class RuntimeScriptableSingletonInitializer : ScriptableObject
 {
@@ -23,7 +24,7 @@ public class RuntimeScriptableSingletonInitializer : ScriptableObject
     public static void Clear() => Instance = null;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    public static void Initialize()
+    public static async void Initialize()
     {
         InitializationStarted = true;
         RuntimeScriptableSingletonInitializer runtimeScriptableSingletonInitializer =
@@ -31,11 +32,21 @@ public class RuntimeScriptableSingletonInitializer : ScriptableObject
 
         if (runtimeScriptableSingletonInitializer == null)
             throw new Exception($"{nameof(RuntimeScriptableSingletonInitializer)} not found in any Resources");
+       
+        var asyncOperation = Addressables.LoadAssetsAsync<BaseRuntimeScriptableSingleton>(runtimeScriptableSingletonInitializer.addressableLabel, null);
 
+        await asyncOperation.Task;
+
+        foreach (BaseRuntimeScriptableSingleton baseRuntimeScriptableSingleton in asyncOperation.Result)
+        {
+            Debug.Log($"RSSI: {baseRuntimeScriptableSingleton.name} added from AddressableAssets");
+            runtimeScriptableSingletonInitializer.elements.Add(baseRuntimeScriptableSingleton);
+        }
+        
+        runtimeScriptableSingletonInitializer.InitializeElements();
+        
         OnInitialization?.Invoke();
         InitializationCompleted = true;
-
-        runtimeScriptableSingletonInitializer.InitializeElements();
     }
 
     public void InitializeElements()
