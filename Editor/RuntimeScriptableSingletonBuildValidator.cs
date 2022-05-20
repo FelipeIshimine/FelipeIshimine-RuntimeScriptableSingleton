@@ -1,8 +1,8 @@
-using UnityEngine;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
+using UnityEngine;
 
-public class RuntimeScriptableSingletonBuildValidator  : IPreprocessBuildWithReport
+public class RuntimeScriptableSingletonBuildValidator : IPreprocessBuildWithReport
 {
     public int callbackOrder => 0;
 
@@ -10,7 +10,7 @@ public class RuntimeScriptableSingletonBuildValidator  : IPreprocessBuildWithRep
     {
         try
         {
-            string errorMessage = RuntimeScriptableSingletonEditorInitializer.PreBuildProcess();
+            string errorMessage = RuntimeScriptableSingletonEditor.PreBuildProcess();
             RuntimeScriptableSingletonInitializer.Clear();
             if (errorMessage.Length > 0)
             {

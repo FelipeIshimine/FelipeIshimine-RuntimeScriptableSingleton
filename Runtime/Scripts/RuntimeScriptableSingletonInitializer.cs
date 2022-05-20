@@ -12,8 +12,9 @@ public class RuntimeScriptableSingletonInitializer : ScriptableObject
     private static Action OnInitialization;
     public static RuntimeScriptableSingletonInitializer Instance { get; private set; }
     
-    public List<BaseRuntimeScriptableSingleton> elements = new List<BaseRuntimeScriptableSingleton>();
-
+    [SerializeField] private List<BaseRuntimeScriptableSingleton> loadedByResources = new List<BaseRuntimeScriptableSingleton>();
+    [SerializeField] private List<AssetReference> loadedByAddressableAssets = new List<AssetReference>();
+    
     public static string DefaultFilePath => $"{DefaultFileFolder}/{DefaultFileName}";
     public const string DefaultFileFolder = "Assets/ScriptableObjects/Resources";
     public const string DefaultFileName = nameof(RuntimeScriptableSingletonInitializer);
@@ -27,52 +28,42 @@ public class RuntimeScriptableSingletonInitializer : ScriptableObject
     public static async void Initialize()
     {
         InitializationStarted = true;
-        RuntimeScriptableSingletonInitializer runtimeScriptableSingletonInitializer =
-            Resources.Load<RuntimeScriptableSingletonInitializer>(nameof(RuntimeScriptableSingletonInitializer));
+        Instance = Resources.Load<RuntimeScriptableSingletonInitializer>(nameof(RuntimeScriptableSingletonInitializer));
+        
+        var allRuntimeScriptableSingletons = new List<BaseRuntimeScriptableSingleton>(Instance.loadedByResources);
 
-        if (runtimeScriptableSingletonInitializer == null)
+        if (Instance == null)
             throw new Exception($"{nameof(RuntimeScriptableSingletonInitializer)} not found in any Resources");
        
-        var asyncOperation = Addressables.LoadAssetsAsync<BaseRuntimeScriptableSingleton>(runtimeScriptableSingletonInitializer.addressableLabel, null);
+        var asyncOperation = Addressables.LoadAssetsAsync<BaseRuntimeScriptableSingleton>(Instance.addressableLabel, null);
 
+        Debug.Log($"RSSI: Load RuntimeSingletons from AddressableAssets START");
         await asyncOperation.Task;
-
         foreach (BaseRuntimeScriptableSingleton baseRuntimeScriptableSingleton in asyncOperation.Result)
         {
             Debug.Log($"RSSI: {baseRuntimeScriptableSingleton.name} added from AddressableAssets");
-            runtimeScriptableSingletonInitializer.elements.Add(baseRuntimeScriptableSingleton);
+            allRuntimeScriptableSingletons.Add(baseRuntimeScriptableSingleton);
         }
+        Debug.Log($"RSSI: Load RuntimeSingletons from AddressableAssets COMPLETE");
+      
+        if (!Debug.isDebugBuild)
+            Debug.Log("RelEaSe VeRsiOn: DeBuG DiSaBlEd");
+
+        Debug.unityLogger.logEnabled = Debug.isDebugBuild;
+
+        Debug.Log("<COLOR=white>---RuntimeScriptableSingleton Initializer---</color>");
+        allRuntimeScriptableSingletons.Sort(RuntimeScriptableSingletonSorter);
+        allRuntimeScriptableSingletons.Reverse();
+
+        foreach (BaseRuntimeScriptableSingleton baseRuntimeScriptableSingleton in allRuntimeScriptableSingletons)
+            baseRuntimeScriptableSingleton.InitializeSingleton();
         
-        runtimeScriptableSingletonInitializer.InitializeElements();
         
         OnInitialization?.Invoke();
         InitializationCompleted = true;
     }
 
-    public void InitializeElements()
-    {
-        if (Instance != null)
-            throw new Exception($"{nameof(RuntimeScriptableSingletonInitializer)} already initialized");
-        Instance = this;
-        
-        Debug.unityLogger.logEnabled = Debug.isDebugBuild;
-
-        if (!Debug.isDebugBuild)
-            Debug.Log("RelEaSe VeRsiOn: DeBuG DiSaBlEd");
-        
-        Debug.Log("<COLOR=white>---RuntimeScriptableSingleton Initializer---</color>");
-
-        List<BaseRuntimeScriptableSingleton> sortedManagers = new List<BaseRuntimeScriptableSingleton>(elements);
-        
-        sortedManagers.Sort(RuntimeScriptableSingletonSorter);
-        sortedManagers.Reverse();
-        
-        foreach (BaseRuntimeScriptableSingleton baseRuntimeScriptableSingleton in sortedManagers)
-            baseRuntimeScriptableSingleton.InitializeSingleton();
-    }
-
     private static int RuntimeScriptableSingletonSorter(BaseRuntimeScriptableSingleton x, BaseRuntimeScriptableSingleton y) => x.InitializationPriority.CompareTo(y.InitializationPriority);
-
 
     public static void WhenInitializationIsDone(Action callback)
     {
@@ -81,5 +72,12 @@ public class RuntimeScriptableSingletonInitializer : ScriptableObject
         else
             OnInitialization += callback;
     }
-   
+
+    public void SetLoadedFromResources(List<BaseRuntimeScriptableSingleton> runtimeSingletons) => loadedByResources = runtimeSingletons;
+
+    public void SetLoadedFromAddressableAssets(List<AssetReference> runtimeSingletons)
+    {
+        loadedByAddressableAssets = runtimeSingletons;
+    }
 }
+

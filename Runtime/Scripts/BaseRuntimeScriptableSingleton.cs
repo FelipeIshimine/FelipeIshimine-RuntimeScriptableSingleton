@@ -21,7 +21,7 @@ public abstract class BaseRuntimeScriptableSingleton : ScriptableObject
     
     public bool IsEditorOnly => loadMode == AssetMode.EditorOnly;
     public bool IncludeAsResource => loadMode == AssetMode.Resources;
-    public bool IncludeAsAddressable => loadMode != AssetMode.Addressable;
+    public bool IncludeAsAddressable => loadMode == AssetMode.Addressable;
     
     public abstract void InitializeSingleton();
     
