@@ -34,15 +34,22 @@ public static class RuntimeScriptableSingletonEditor
 
         var runtimeSingletons = FindAllRuntimeScriptableSingleton();
         InstantiateMissing(runtimeSingletons);
+        FilterSingletons(runtimeSingletons, runtimeScriptableSingletonInitializer);
+        EditorUtility.SetDirty(runtimeScriptableSingletonInitializer);
+    }
 
+    private static void FilterSingletons(List<BaseRuntimeScriptableSingleton> runtimeSingletons,
+        RuntimeScriptableSingletonInitializer runtimeScriptableSingletonInitializer)
+    {
         var forResources = runtimeSingletons.FindAll(x => x.IncludeAsResource);
         runtimeScriptableSingletonInitializer.SetLoadedFromResources(forResources);
 
         var forAddressableAsset = runtimeSingletons.FindAll(x => x.IncludeAsAddressable);
 
         List<AssetReference> assetReferences = new List<AssetReference>();
-        
-        var group = AddressableAssetSettingsDefaultObject.Settings.groups.Find(x => x.Name == runtimeScriptableSingletonInitializer.addressableGroupName);
+
+        var group = AddressableAssetSettingsDefaultObject.Settings.groups.Find(x =>
+            x.Name == runtimeScriptableSingletonInitializer.addressableGroupName);
 
         if (group)
         {
@@ -50,26 +57,25 @@ public static class RuntimeScriptableSingletonEditor
             foreach (AddressableAssetEntry addressableAssetEntry in entries)
                 group.RemoveAssetEntry(addressableAssetEntry);
         }
-        
+
         foreach (BaseRuntimeScriptableSingleton baseRuntimeScriptableSingleton in forAddressableAsset)
         {
             AddressablesUtility.AddToAddressableAssets(
-                baseRuntimeScriptableSingleton, 
-                runtimeScriptableSingletonInitializer.addressableGroupName, 
+                baseRuntimeScriptableSingleton,
+                runtimeScriptableSingletonInitializer.addressableGroupName,
                 runtimeScriptableSingletonInitializer.addressableLabel);
-            assetReferences.Add(new AssetReference(AssetDatabase.GUIDFromAssetPath(AssetDatabase.GetAssetPath(baseRuntimeScriptableSingleton)).ToString()));
+            assetReferences.Add(new AssetReference(AssetDatabase
+                .GUIDFromAssetPath(AssetDatabase.GetAssetPath(baseRuntimeScriptableSingleton)).ToString()));
         }
-        
-        runtimeScriptableSingletonInitializer.SetLoadedFromAddressableAssets(assetReferences);
 
-        EditorUtility.SetDirty(runtimeScriptableSingletonInitializer);
+        runtimeScriptableSingletonInitializer.SetLoadedFromAddressableAssets(assetReferences);
     }
 
     public static string PreBuildProcess()
     {
         var allSingletons = FindAllRuntimeScriptableSingleton();
-        InstantiateMissing(allSingletons);
-
+        RuntimeScriptableSingletonInitializer runtimeScriptableSingletonInitializer = Resources.Load<RuntimeScriptableSingletonInitializer>(nameof(RuntimeScriptableSingletonInitializer));
+        
         StringBuilder errors = new StringBuilder();
         foreach (BaseRuntimeScriptableSingleton baseRuntimeScriptableSingleton in allSingletons)
         {
@@ -79,6 +85,10 @@ public static class RuntimeScriptableSingletonEditor
                 errors.Append($"{message} \n");
         }
 
+        InstantiateMissing(allSingletons);
+        FilterSingletons(allSingletons, runtimeScriptableSingletonInitializer);
+        EditorUtility.SetDirty(runtimeScriptableSingletonInitializer);
+        
         return errors.ToString();
     }
 
