@@ -22,7 +22,7 @@ public abstract class RuntimeScriptableSingleton<T> : BaseRuntimeScriptableSingl
 #if UNITY_EDITOR
             if(!Application.isPlaying)
             {
-                _instance = FindOrCreate();
+                _instance = FindOrCreateInstanceAsset();
                 return _instance;
             }
 #endif
@@ -30,8 +30,8 @@ public abstract class RuntimeScriptableSingleton<T> : BaseRuntimeScriptableSingl
         }
     }
 
-    private static string DefaultFileName =>  typeof(T).Name;
-    private static string DefaultFilePath => $"{DefaultFileFolder}/{DefaultFileName}.asset";
+    protected static string DefaultFileName =>  typeof(T).Name;
+    protected static string DefaultFilePath => $"{DefaultFileFolder}/{DefaultFileName}.asset";
 
     public T Myself => this as T;
 
@@ -55,11 +55,11 @@ public abstract class RuntimeScriptableSingleton<T> : BaseRuntimeScriptableSingl
 
 
 #if UNITY_EDITOR
-    public static T FindOrCreate()
+    public static T FindOrCreateInstanceAsset()
     {
         var guids = AssetDatabase.FindAssets($"t:{typeof(T)}");
         _instance = AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(guids[0])); 
-        if (_instance == null)
+        if (!_instance)
         {
             _instance = CreateInstance<T>();
             System.IO.Directory.CreateDirectory(DefaultFilePath);
