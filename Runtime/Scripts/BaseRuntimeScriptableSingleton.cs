@@ -9,6 +9,7 @@ public abstract class BaseRuntimeScriptableSingleton : ScriptableObject
     /// </summary>
     public virtual int InitializationPriority => 0;
 
+    [System.Serializable]
     public enum AssetMode
     {
         EditorOnly,
