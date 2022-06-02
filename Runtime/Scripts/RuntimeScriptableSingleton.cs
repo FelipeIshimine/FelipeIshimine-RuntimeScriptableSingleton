@@ -30,6 +30,8 @@ public abstract class RuntimeScriptableSingleton<T> : BaseRuntimeScriptableSingl
         }
     }
 
+    
+
     protected static string DefaultFileName =>  typeof(T).Name;
     protected static string DefaultFilePath => $"{DefaultFileFolder}/{DefaultFileName}.asset";
 
@@ -39,6 +41,16 @@ public abstract class RuntimeScriptableSingleton<T> : BaseRuntimeScriptableSingl
     {
         if (name != DefaultFileName)
             name = DefaultFileName;
+    }
+
+    public static bool Initialized => _instance != null;
+    private static Action _onInitialize;
+    public static void WhenInitialize(Action callback)
+    {
+        if (Initialized)
+            callback?.Invoke();
+        else
+            _onInitialize += callback;
     }
 
     public override void InitializeSingleton()
@@ -51,6 +63,9 @@ public abstract class RuntimeScriptableSingleton<T> : BaseRuntimeScriptableSingl
         
         _instance = this as T;
         Debug.Log($" <Color=white> |{InitializationPriority}|</color> <Color=green> {_instance}  </color> ");
+        
+        _onInitialize?.Invoke();
+        _onInitialize = null;
     }
 
 
