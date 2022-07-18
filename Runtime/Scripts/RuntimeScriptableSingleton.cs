@@ -44,11 +44,11 @@ public abstract class RuntimeScriptableSingleton<T> : BaseRuntimeScriptableSingl
     }
 
     public static bool Initialized => _instance != null;
-    private static Action _onInitialize;
-    public static void WhenInitialize(Action callback)
+    private static Action<T> _onInitialize;
+    public static void WhenInitialize(Action<T> callback)
     {
         if (Initialized)
-            callback?.Invoke();
+            callback?.Invoke(Instance);
         else
             _onInitialize += callback;
     }
@@ -64,7 +64,7 @@ public abstract class RuntimeScriptableSingleton<T> : BaseRuntimeScriptableSingl
         _instance = this as T;
         Debug.Log($" <Color=white> |{InitializationPriority}|</color> <Color=green> {_instance}  </color> ");
         
-        _onInitialize?.Invoke();
+        _onInitialize?.Invoke(_instance);
         _onInitialize = null;
     }
 
