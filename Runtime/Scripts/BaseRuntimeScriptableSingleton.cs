@@ -18,7 +18,7 @@ public abstract class BaseRuntimeScriptableSingleton : ScriptableObject
         AddressableManual
     }
 
-    public AssetMode loadMode = AssetMode.Resources;
+    public AssetMode loadMode = AssetMode.Addressable;
     
     public bool IsEditorOnly => loadMode == AssetMode.EditorOnly;
     public bool IncludeAsResource => loadMode == AssetMode.Resources;
