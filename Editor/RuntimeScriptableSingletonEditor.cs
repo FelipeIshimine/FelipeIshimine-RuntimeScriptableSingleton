@@ -146,6 +146,8 @@ public static class RuntimeScriptableSingletonEditor
             string currentPath = $"{BaseRuntimeScriptableSingleton.DefaultFileFolder}/{item.Name}.asset";
             uObject = AssetDatabase.LoadAssetAtPath(currentPath, item);
 
+            Debug.Log($"${item.Name} Asset not found at {currentPath}");
+
             if (uObject != null) continue;
 
             uObject = ScriptableObject.CreateInstance(item);
@@ -163,7 +165,7 @@ public static class RuntimeScriptableSingletonEditor
             select type;
     }
 
-    public static List<Object> FindAssetsByType(Type type)
+    public static List<Object> FindAssetsByType(Type type, bool onlyMainAsset = true)
     {
         List<Object> assets = new List<Object>();
         string[] guids = AssetDatabase.FindAssets($"t:{type}");
@@ -173,8 +175,10 @@ public static class RuntimeScriptableSingletonEditor
             Object[] found = AssetDatabase.LoadAllAssetsAtPath(assetPath);
 
             for (int index = 0; index < found.Length; index++)
-                if (found[index] is { } item && !assets.Contains(item))
+            {
+               if ((!onlyMainAsset || AssetDatabase.IsMainAsset(found[index])) && found[index] is { } item && !assets.Contains(item))
                     assets.Add(item);
+            }
         }
 
         return assets;
