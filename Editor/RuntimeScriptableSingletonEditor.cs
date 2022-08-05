@@ -154,7 +154,11 @@ public static class RuntimeScriptableSingletonEditor
             var values =  FindAssetsByType(item);
 
             if (values.Count > 0)
+            {
+                string path = AssetDatabase.GetAssetPath(values[0]);
+                Debug.Log($"${item.Name} Asset found with wrong name. Renaming it. From:{path} To:{AssetDatabase.RenameAsset(path, item.Name)}");
                 continue;
+            }
             
             Debug.Log($"${item.Name} Asset not found at {currentPath}, creating new one");
 
