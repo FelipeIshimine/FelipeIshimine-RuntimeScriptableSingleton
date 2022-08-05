@@ -159,11 +159,13 @@ public static class RuntimeScriptableSingletonEditor
                 Debug.Log($"${item.Name} Asset found with wrong name. Renaming it. From:{path} To:{AssetDatabase.RenameAsset(path, item.Name)}");
                 continue;
             }
-            
-            Debug.Log($"${item.Name} Asset not found at {currentPath}, creating new one");
 
-            uObject = ScriptableObject.CreateInstance(item);
-            AssetDatabase.CreateAsset(uObject, $"{currentPath}");
+            if (EditorUtility.DisplayDialog($"Asset not found: {item.Name}", $"Could not found the asset {item.Name}.asset. Want to create a new one?", "Yes", "No"))
+            {
+                Debug.Log($"${item.Name} Asset not found at {currentPath}, creating new one");
+                uObject = ScriptableObject.CreateInstance(item);
+                AssetDatabase.CreateAsset(uObject, $"{currentPath}");                
+            }
         }
 
         AssetDatabase.SaveAssets();
