@@ -142,13 +142,21 @@ public static class RuntimeScriptableSingletonEditor
                 Directory.CreateDirectory(fullPath);
                 AssetDatabase.Refresh();
             }
+            
 
             string currentPath = $"{BaseRuntimeScriptableSingleton.DefaultFileFolder}/{item.Name}.asset";
             uObject = AssetDatabase.LoadAssetAtPath(currentPath, item);
 
-            Debug.Log($"${item.Name} Asset not found at {currentPath}");
 
-            if (uObject != null) continue;
+            if (uObject != null)
+                continue;
+
+            var values =  FindAssetsByType(item);
+
+            if (values.Count > 0)
+                continue;
+            
+            Debug.Log($"${item.Name} Asset not found at {currentPath}, creating new one");
 
             uObject = ScriptableObject.CreateInstance(item);
             AssetDatabase.CreateAsset(uObject, $"{currentPath}");
