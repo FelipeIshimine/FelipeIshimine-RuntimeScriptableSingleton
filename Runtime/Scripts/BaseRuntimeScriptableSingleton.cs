@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -35,4 +36,5 @@ public abstract class BaseRuntimeScriptableSingleton : ScriptableObject
     /// </summary>
     public virtual (bool success, string errorMessage) PreBuildProcess() => (true, string.Empty);
 
+    public virtual Task PrePlayProcessAsync() => Task.CompletedTask;
 }

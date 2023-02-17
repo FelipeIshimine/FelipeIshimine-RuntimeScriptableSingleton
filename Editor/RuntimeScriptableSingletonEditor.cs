@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
@@ -37,6 +38,7 @@ public static class RuntimeScriptableSingletonEditor
         FilterSingletons(runtimeSingletons, runtimeScriptableSingletonInitializer);
         EditorUtility.SetDirty(runtimeScriptableSingletonInitializer);
     }
+
 
     private static void FilterSingletons(List<BaseRuntimeScriptableSingleton> runtimeSingletons,
         RuntimeScriptableSingletonInitializer runtimeScriptableSingletonInitializer)
@@ -214,4 +216,22 @@ public static class RuntimeScriptableSingletonEditor
 
         return assets;
     }
+
+    public static async Task<bool> PrePlayProcessAsync()
+    {
+        var runtimeScriptableSingletons = FindAllRuntimeScriptableSingleton();
+        try
+        {
+            foreach (BaseRuntimeScriptableSingleton runtimeScriptableSingleton in runtimeScriptableSingletons)
+                await runtimeScriptableSingleton.PrePlayProcessAsync();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            return false;
+        }
+        return true;
+    }
+    
+    
 }
