@@ -24,7 +24,7 @@ public class RuntimeScriptableSingletonInitializer : ScriptableObject
 
     public static void Clear() => Instance = null;
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static async void Initialize()
     {
         InitializationStarted = true;
